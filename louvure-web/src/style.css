@@ -1,0 +1,271 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+ 
+/* =========================================
+   CSS CUSTOM PROPERTIES — Motion Tokens
+   ========================================= */
+:root {
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-back: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-medium: 300ms;
+  --duration-slow: 500ms;
+  --duration-xslow: 700ms;
+}
+ 
+/* =========================================
+   GLOBAL KEYFRAMES
+   ========================================= */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+ 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+ 
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+ 
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+ 
+@keyframes floatUp {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+ 
+@keyframes shimmerSweep {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+ 
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 0.65; }
+}
+ 
+/* =========================================
+   ANIMATION UTILITY CLASSES
+   ========================================= */
+.anim-fade-in-up {
+  animation: fadeInUp var(--duration-slow) var(--ease-luxury) both;
+}
+.anim-fade-in {
+  animation: fadeIn var(--duration-medium) ease-out both;
+}
+.anim-scale-in {
+  animation: scaleIn 0.4s var(--ease-luxury) both;
+}
+ 
+/* Stagger helpers */
+.stagger-1 { animation-delay: 60ms; }
+.stagger-2 { animation-delay: 120ms; }
+.stagger-3 { animation-delay: 180ms; }
+.stagger-4 { animation-delay: 240ms; }
+.stagger-5 { animation-delay: 300ms; }
+.stagger-6 { animation-delay: 360ms; }
+.stagger-7 { animation-delay: 420ms; }
+.stagger-8 { animation-delay: 480ms; }
+ 
+/* =========================================
+   GLOBAL BASE STYLES
+   ========================================= */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+ 
+/* Custom Scrollbar for Cart */
+#cartItemsContainer::-webkit-scrollbar { width: 6px; }
+#cartItemsContainer::-webkit-scrollbar-track { background: transparent; }
+#cartItemsContainer::-webkit-scrollbar-thumb {
+  background-color: #fca5a5;
+  border-radius: 10px;
+}
+ 
+html {
+  scroll-behavior: smooth;
+  background: linear-gradient(160deg,
+    #fdf2f0 0%,
+    #fce8e4 18%,
+    #faeae8 38%,
+    #fdf0ed 55%,
+    #faf5f3 72%,
+    #fdf8f6 88%,
+    #fff9f8 100%
+  );
+  min-height: 100%;
+}
+ 
+body {
+  @apply text-slate-900 dark:text-slate-100 transition-colors duration-300;
+  font-family: 'Jost', system-ui, sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  background: transparent;
+  position: relative;
+}
+ 
+/* =========================================
+   Orbs marmolados globales
+   ========================================= */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 10%, rgba(201,130,120,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 45% at 85% 5%,  rgba(255,200,185,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 55% at 50% 50%, rgba(253,230,220,0.14) 0%, transparent 50%),
+    radial-gradient(ellipse 65% 50% at 10% 90%, rgba(180,79,79,0.07)  0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 90% 85%, rgba(201,169,110,0.08) 0%, transparent 50%);
+}
+ 
+/* Headings & editorial elements — Cormorant Garamond 300 italic */
+h1, h2, h3, .font-display {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 300;
+  font-style: italic;
+  font-feature-settings: "kern" 1, "liga" 1, "onum" 1;
+  letter-spacing: -0.01em;
+}
+ 
+.font-display-upright {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 300;
+  font-style: normal;
+  font-feature-settings: "kern" 1, "liga" 1, "onum" 1;
+}
+ 
+a, button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+ 
+#cartTotal,
+.text-primary.font-black {
+  font-variant-numeric: tabular-nums;
+}
+ 
+/* =========================================
+   GLASSMORPHISM UTILITY
+   ========================================= */
+.glass-surface {
+  background: rgba(253, 242, 240, 0.75);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(180, 79, 79, 0.12);
+}
+.dark .glass-surface {
+  background: rgba(29, 21, 21, 0.75);
+  border-color: rgba(180, 79, 79, 0.18);
+}
+ 
+/* =========================================
+   PRODUCT CARD ENHANCEMENTS
+   ========================================= */
+.product-card {
+  transition: transform 300ms var(--ease-out-quart),
+              box-shadow 300ms var(--ease-out-quart);
+}
+.product-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 60px -12px rgba(180, 79, 79, 0.25), 0 4px 16px -4px rgba(0,0,0,0.08);
+}
+.product-card .card-image-inner {
+  transition: transform 600ms var(--ease-out-quart);
+}
+.product-card:hover .card-image-inner {
+  transform: scale(1.08);
+}
+.product-card .card-overlay {
+  background: linear-gradient(to top, rgba(62, 39, 35, 0.6) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+.product-card:hover .card-overlay {
+  opacity: 1;
+}
+ 
+/* =========================================
+   FILTER PILL TRANSITIONS
+   ========================================= */
+.filter-pill {
+  position: relative;
+  transition: color 200ms ease, background-color 200ms ease, transform 200ms var(--ease-out-quart), box-shadow 200ms ease;
+  will-change: transform;
+}
+.filter-pill:hover  { transform: translateY(-1px); }
+.filter-pill:active { transform: scale(0.96); }
+.filter-pill.active { transform: scale(1.04); }
+ 
+/* =========================================
+   HERO FOUC PROTECTION
+   ========================================= */
+@media (prefers-reduced-motion: no-preference) {
+  .anim-hero {
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+}
+ 
+/* =========================================
+   BENEFIT CARDS
+   ========================================= */
+.anim-benefit {
+  opacity: 0;
+}
+ 
+/* =========================================
+   GRADIENT ANIMATED BACKGROUND
+   ========================================= */
+.bg-gradient-animate {
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+ 
+/* =========================================
+   GLOW AMBIENT ORBS
+   ========================================= */
+.ambient-orb {
+  animation: pulseGlow 6s ease-in-out infinite;
+}
+ 
+/* =========================================
+   NAVBAR SEARCH EXPANSION
+   ========================================= */
+#searchInput {
+  transition: width 250ms var(--ease-out-quart);
+  width: 9rem;
+}
+#searchInput:focus {
+  width: 13rem;
+}
+ 
+/* =========================================
+   REDUCED MOTION OVERRIDES
+   ========================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .anim-hero,
+  .anim-benefit {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

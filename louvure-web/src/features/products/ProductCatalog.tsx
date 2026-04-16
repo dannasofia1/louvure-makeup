@@ -15,7 +15,19 @@ export default function ProductCatalog({
 }: ProductCatalogProps) {
   const [currentCategory, setCurrentCategory] = useState<string>('Todos');
   const [gridKey, setGridKey] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const filterRef = useRef<string>('Todos');
+
+  useEffect(() => {
+    if (selectedProduct) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedProduct]);
   const gridRef = useRef<HTMLDivElement>(null);
 
   // Scroll-reveal: observe each product card as it enters the viewport
@@ -191,7 +203,8 @@ export default function ProductCatalog({
               filteredProducts.map((product, index) => (
                 <div
                   key={product.id}
-                  className="product-card group relative rounded-2xl overflow-hidden"
+                  className="product-card group relative rounded-2xl overflow-hidden cursor-pointer"
+                  onClick={() => setSelectedProduct(product)}
                   style={{
                     /* Initial hidden state — IntersectionObserver will reveal */
                     opacity: 0,
@@ -279,28 +292,6 @@ export default function ProductCatalog({
                       >
                         {formatPrice(product.price)}
                       </p>
-                      <button
-                        onClick={() => onAddToCart(product.id)}
-                        className="flex items-center gap-1.5 text-white py-2.5 px-5 rounded-full active:scale-95 transition-all duration-200 cursor-pointer"
-                        aria-label={`Añadir ${product.name} al carrito`}
-                        style={{
-                          fontFamily: "'Jost', sans-serif",
-                          fontSize: '11px',
-                          fontWeight: 400,
-                          letterSpacing: '0.1em',
-                          textTransform: 'uppercase',
-                          background: 'rgba(62, 39, 35, 0.88)',
-                          backdropFilter: 'blur(8px)',
-                          WebkitBackdropFilter: 'blur(8px)',
-                          border: '1px solid rgba(255,255,255,0.15)',
-                          boxShadow: '0 2px 8px -2px rgba(62,39,35,0.35)',
-                        }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(62,39,35,1)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'rgba(62, 39, 35, 0.88)')}
-                      >
-                        <span className="material-symbols-outlined text-[14px]">add_shopping_cart</span>
-                        Añadir
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -309,6 +300,116 @@ export default function ProductCatalog({
           </div>
         </div>
       </section>
+
+      {/* Product Popup Modal */}
+      {selectedProduct && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all animate-in fade-in duration-300"
+          onClick={() => setSelectedProduct(null)}
+        >
+          <div
+            className="bg-[#fdf2f0] dark:bg-slate-900 rounded-3xl overflow-hidden max-w-sm sm:max-w-md w-full shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] relative animate-in zoom-in-95 duration-300"
+            onClick={(e) => e.stopPropagation()}
+            style={{ border: '1px solid rgba(255,255,255,0.4)' }}
+          >
+            {/* Close Button */}
+            <button
+              className="absolute top-4 right-4 z-10 w-9 h-9 flex items-center justify-center bg-white/70 hover:bg-white backdrop-blur-md rounded-full shadow-sm text-slate-800 transition-colors"
+              onClick={() => setSelectedProduct(null)}
+              aria-label="Cerrar detalles"
+            >
+              <span className="material-symbols-outlined text-[20px]">close</span>
+            </button>
+
+            {/* Product Image */}
+            <div className="relative w-full aspect-[4/5] sm:aspect-square overflow-hidden bg-white/50">
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url('${selectedProduct.image}')` }}
+              />
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(to top, rgba(30,15,15,0.22) 0%, transparent 45%)',
+                }}
+              />
+              {selectedProduct.badge && (
+                <div
+                  className={`absolute top-5 left-5 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wide shadow-md ${
+                    selectedProduct.badgeColor || 'bg-white/85 text-primary backdrop-blur-sm'
+                  }`}
+                >
+                  {selectedProduct.badge}
+                </div>
+              )}
+            </div>
+
+            {/* Product Info */}
+            <div className="p-6 sm:p-8 shrink-0">
+              <span
+                className="text-primary/80 font-semibold tracking-[0.2em] uppercase text-[10px] mb-2 block"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                {selectedProduct.category}
+              </span>
+              <h3
+                className="text-slate-900 text-2xl sm:text-3xl mb-3 leading-tight"
+                style={{
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  fontWeight: 400,
+                  fontStyle: 'italic',
+                }}
+              >
+                {selectedProduct.name}
+              </h3>
+              <p
+                className="text-slate-600 text-[14px] sm:text-[15px] leading-relaxed mb-8"
+                style={{ fontFamily: "'Jost', sans-serif", fontWeight: 300 }}
+              >
+                {selectedProduct.description}
+              </p>
+
+              <div className="flex items-center justify-between mt-auto">
+                <p
+                  className="text-primary text-3xl"
+                  style={{
+                    fontFamily: "'Cormorant Garamond', Georgia, serif",
+                    fontWeight: 400,
+                    fontStyle: 'italic',
+                  }}
+                >
+                  {formatPrice(selectedProduct.price)}
+                </p>
+                <button
+                  onClick={() => {
+                    onAddToCart(selectedProduct.id);
+                    setSelectedProduct(null);
+                  }}
+                  className="flex items-center gap-2 text-white py-3 px-6 rounded-full active:scale-95 transition-all duration-200 cursor-pointer"
+                  aria-label={`Añadir ${selectedProduct.name} al carrito`}
+                  style={{
+                    fontFamily: "'Jost', sans-serif",
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    background: 'rgba(62, 39, 35, 0.95)',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    boxShadow: '0 4px 12px -2px rgba(62,39,35,0.4)',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(62,39,35,1)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'rgba(62, 39, 35, 0.95)')}
+                >
+                  <span className="material-symbols-outlined text-[16px]">add_shopping_cart</span>
+                  Añadir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

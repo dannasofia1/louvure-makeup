@@ -63,7 +63,7 @@ export default function ProductCatalog({
   }, [gridKey, observeCards]);
 
   const categories = useMemo(() => {
-    return ['Todos', ...new Set(products.map((p) => p.category))];
+    return ['Todos', ...Array.from(new Set(products.map((p) => p.category)))];
   }, [products]);
 
   const filteredProducts = useMemo(() => {
